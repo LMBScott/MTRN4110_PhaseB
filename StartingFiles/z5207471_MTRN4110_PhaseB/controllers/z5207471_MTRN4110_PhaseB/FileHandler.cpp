@@ -145,12 +145,12 @@ std::unique_ptr<MazeMap> FileHandler::ReadMap(std::string filePath)
 
                 if (numGoalPoints > 1)
                 {
-                    throw std::runtime_error("FileHandler::ReadMap: Map contains more than one goal point (\'x\')");
+                    throw std::runtime_error("FileHandler::ReadMap: Map contains more than one goal point ('x')");
                 }
 
                 if (numStartPoints > 1)
                 {
-                    throw std::runtime_error("FileHandler::ReadMap: Map contains more than one starting point (\'^\', 'v', '<' or '>')");
+                    throw std::runtime_error("FileHandler::ReadMap: Map contains more than one starting point ('^', 'v', '<' or '>')");
                 }
             }
             else if (!std::regex_match(line, mapSeparatorRowRegex))

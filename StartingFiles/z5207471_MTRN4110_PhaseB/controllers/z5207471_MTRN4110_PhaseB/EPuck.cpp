@@ -271,7 +271,7 @@ void EPuck::SolveMap()
     Print(map->GetOptimalPathOutput(), true);
     Print("Writing path plan to " + pathPlanOutputFilePath + "...\n", true);
     fileHandler.WriteLine(pathPlanOutputFilePath, map->GetOptimalPathPlan(), false);
-    Print("Path plan written to " + pathPlanOutputFilePath + "!\n", true);
+    Print("Path plan written to " + pathPlanOutputFilePath + "!", true);
 }
 
 // Create or overwrite the csv output file at the specified path, and add the required heading on the first line

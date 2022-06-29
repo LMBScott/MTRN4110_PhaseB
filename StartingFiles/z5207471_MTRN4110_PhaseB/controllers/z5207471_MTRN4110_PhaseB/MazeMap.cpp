@@ -21,11 +21,11 @@ MazeMap::MazeMap(std::vector<std::string> mapString)
                     isStartCell = true;
                     startDirection = Direction::South;
                     break;
-                case '<':
+                case '>':
                     isStartCell = true;
                     startDirection = Direction::East;
                     break;
-                case '>':
+                case '<':
                     isStartCell = true;
                     startDirection = Direction::West;
                     break;
@@ -257,10 +257,21 @@ void MazeMap::IteratePathFind(int shortestPathIndex, Direction currentDirection)
         {
             hasFoundPath = true;
 
-            if (currentDirection != Direction::North)
+            switch (currentDirection)
             {
-                shortestPaths[shortestPathIndex].planString += 
-                    currentDirection == Direction::East ? (char)Movement::Left : (char)Movement::Right;
+                case Direction::South:
+                    shortestPaths[shortestPathIndex].planString += (char)Movement::Left;
+                    shortestPaths[shortestPathIndex].planString += (char)Movement::Left;
+                    break;
+                case Direction::East:
+                    shortestPaths[shortestPathIndex].planString += (char)Movement::Left;
+                    break;
+                case Direction::West:
+                    shortestPaths[shortestPathIndex].planString += (char)Movement::Right;
+                    break;
+                case Direction::North:
+                default:
+                    break;
             }
 
             shortestPaths[shortestPathIndex].planString += (char)Movement::Forward;
@@ -294,10 +305,21 @@ void MazeMap::IteratePathFind(int shortestPathIndex, Direction currentDirection)
 
             hasFoundPath = true;
 
-            if (currentDirection != Direction::South)
+            switch (currentDirection)
             {
-                shortestPaths[nextPathIndex].planString += 
-                    currentDirection == Direction::East ? (char)Movement::Right : (char)Movement::Left;
+                case Direction::North:
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Left;
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Left;
+                    break;
+                case Direction::East:
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Right;
+                    break;
+                case Direction::West:
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Left;
+                    break;
+                case Direction::South:
+                default:
+                    break;
             }
 
             shortestPaths[nextPathIndex].planString += (char)Movement::Forward;
@@ -331,10 +353,21 @@ void MazeMap::IteratePathFind(int shortestPathIndex, Direction currentDirection)
 
             hasFoundPath = true;
 
-            if (currentDirection != Direction::East)
+            switch (currentDirection)
             {
-                shortestPaths[nextPathIndex].planString += 
-                    currentDirection == Direction::North ? (char)Movement::Right : (char)Movement::Left;
+                case Direction::North:
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Right;
+                    break;
+                case Direction::South:
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Left;
+                    break;
+                case Direction::West:
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Left;
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Left;
+                    break;
+                case Direction::East:
+                default:
+                    break;
             }
 
             shortestPaths[nextPathIndex].planString += (char)Movement::Forward;
@@ -366,10 +399,21 @@ void MazeMap::IteratePathFind(int shortestPathIndex, Direction currentDirection)
                 shortestPaths.push_back(newPath);
             }
 
-            if (currentDirection != Direction::West)
+            switch (currentDirection)
             {
-                shortestPaths[nextPathIndex].planString += 
-                    currentDirection == Direction::North ? (char)Movement::Left : (char)Movement::Right;
+                case Direction::North:
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Left;
+                    break;
+                case Direction::South:
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Right;
+                    break;
+                case Direction::East:
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Left;
+                    shortestPaths[nextPathIndex].planString += (char)Movement::Left;
+                    break;
+                case Direction::West:
+                default:
+                    break;
             }
 
             shortestPaths[nextPathIndex].planString += (char)Movement::Forward;
@@ -414,12 +458,12 @@ void MazeMap::PrintWeightMap()
                 // Two digit weight
                 else if (cellWeight > 9)
                 {
-                    center = " " + std::to_string(cellWeight);
+                    center = ' ' + std::to_string(cellWeight);
                 }
                 // One digit weight
                 else
                 {
-                    center = "  " + std::to_string(cellWeight);
+                    center = ' ' + std::to_string(cellWeight) + ' ';
                 }
             }
 
@@ -503,12 +547,12 @@ std::vector<std::string> MazeMap::GetPathMap(MazeMap::MazePath path)
                 // Two digit weight
                 else if (cellWeight > 9)
                 {
-                    center = " " + std::to_string(cellWeight);
+                    center = ' ' + std::to_string(cellWeight);
                 }
                 // One digit weight
                 else
                 {
-                    center = "  " + std::to_string(cellWeight);
+                    center = ' ' + std::to_string(cellWeight) + ' ';
                 }
             }
 
