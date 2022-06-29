@@ -22,7 +22,10 @@ public:
     int GetTimeStep() const;                                            // Retrieve the basic time step of the simulation
     void ReadMotionPlan(std::string filePath);
     void SetUpExecutionFile(std::string filePath);
+    void SetOutputFile(std::string filePath);
+    void SetPathPlanOutputFile(std::string filePath);
     void ReadMap(std::string filePath);
+    void SolveMap();
 private:
     static constexpr int TIME_STEP {64};
     static constexpr int NUM_DISTANCE_SENSORS {11};                     // Total number of distance sensors on the e-puck robot
@@ -83,9 +86,12 @@ private:
         distSensors;                                                    // Stores pointers to each built-in distance sensor
     std::string motionPlanFilePath;
     std::string motionExecutionFilePath;
+    std::string outputFilePath;
+    std::string pathPlanOutputFilePath;
     void Run();                                                         // Run the robot for a single timestep
     void UpdateSensors();
-    void Print(std::string message);                                    // General console output function, prepends print prefix
+    void Print(std::string message, bool shouldWriteToOutput = false);          // General console output function, prepends print prefix
+    void Print(std::vector<std::string> lines, bool shouldWriteToOutput = false);
     void PrintPlanState();
     void PrintPlanDetails();
     void PrintIMUReadings();

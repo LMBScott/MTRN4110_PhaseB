@@ -6,7 +6,7 @@
 
 #include <EPuck.hpp>
 
-const std::string EPuck::PRINT_PREFIX = "[z5207471_MTRN4110_PhaseA] ";
+const std::string EPuck::PRINT_PREFIX = "[z5207471_MTRN4110_PhaseB] ";
 
 const std::array<std::string, EPuck::NUM_DISTANCE_SENSORS> EPuck::distSensorNames =
 {
@@ -247,18 +247,31 @@ void EPuck::ReadMotionPlan(std::string filePath)
 // Read in the maze layout from the specified file path
 void EPuck::ReadMap(std::string filePath)
 {
-    Print("Reading in map from " + filePath + "...\n");
+    fileHandler.WriteLine(outputFilePath, "\0", false); // Clear output file
+    Print("Reading in map from " + filePath + "...\n", true);
+
     map = fileHandler.ReadMap(filePath);
 
     std::vector<std::string> mapLines = map->GetStringLines();
 
     for (std::string line : mapLines)
     {
-        Print(line + "\n");
+        Print(line + "\n", true);
     }
 
-    Print("Map read in!\n");
-    map->PrintMazeInfo();
+    Print("Map read in!\n", true);
+}
+
+void EPuck::SolveMap()
+{
+    Print("Finding shortest paths...\n", true);
+    map->PathFind();
+    Print(map->GetShortestPathOutput(), true);
+    Print("Finding shortest path with least turns...\n", true);
+    Print(map->GetOptimalPathOutput(), true);
+    Print("Writing path plan to " + pathPlanOutputFilePath + "...\n", true);
+    fileHandler.WriteLine(pathPlanOutputFilePath, map->GetOptimalPathPlan(), false);
+    Print("Path plan written to " + pathPlanOutputFilePath + "!\n", true);
 }
 
 // Create or overwrite the csv output file at the specified path, and add the required heading on the first line
@@ -266,6 +279,16 @@ void EPuck::SetUpExecutionFile(std::string filePath)
 {
     motionExecutionFilePath = filePath;
     fileHandler.WriteExecutionHeader(motionExecutionFilePath);
+}
+
+void EPuck::SetOutputFile(std::string filePath)
+{
+    outputFilePath = filePath;
+}
+
+void EPuck::SetPathPlanOutputFile(std::string filePath)
+{
+    pathPlanOutputFilePath = filePath;
 }
 
 // Obtain the most current reading for each of the e-puck's sensors
@@ -290,9 +313,22 @@ bool EPuck::IsWithinTolerance(double value, double target, double tolerance)
     return (value >= target - tolerance) && (value <= target + tolerance);
 }
 
-void EPuck::Print(std::string message)
+void EPuck::Print(std::string message, bool shouldWriteToOutput)
 {
     std::cout << PRINT_PREFIX << message;
+
+    if (shouldWriteToOutput)
+    {
+        fileHandler.WriteLine(outputFilePath, PRINT_PREFIX + message, true);
+    }
+}
+
+void EPuck::Print(std::vector<std::string> lines, bool shouldWriteToOutput)
+{
+    for (std::string line : lines)
+    {
+        Print(line, shouldWriteToOutput);
+    }
 }
 
 void EPuck::PrintPlanState()

@@ -30,6 +30,8 @@ public:
     std::unique_ptr<MazeMap> ReadMap(std::string filePath);
     void WriteExecutionHeader(std::string filePath);
     void WritePlanState(std::string filePath, int step, int row, int column, Direction heading, std::array<bool, 3> wallVisibility);
+    void WriteLine(std::string filePath, std::string line, bool shouldAppend);
+    void WriteLines(std::string filePath, std::vector<std::string> lines, bool shouldAppend);
 private:
     static constexpr int PLAN_INIT_COND_LENGTH {3};
     std::regex planRegex;

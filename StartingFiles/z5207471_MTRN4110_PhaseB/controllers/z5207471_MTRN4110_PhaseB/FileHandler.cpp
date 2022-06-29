@@ -202,12 +202,15 @@ std::unique_ptr<MazeMap> FileHandler::ReadMap(std::string filePath)
 
 void FileHandler::WriteExecutionHeader(std::string filePath)
 {
-    std::ofstream fout {filePath, std::ios::out};  // Open file in append mode
+    std::ofstream fout {filePath, std::ios::out};
 
-    if (fout.is_open()) {
+    if (fout.is_open()) 
+    {
         fout << "Step,Row,Column,Heading,Left Wall,Front Wall,Right Wall" << std::endl;
         fout.close();
-    } else {
+    } 
+    else 
+    {
         // Throw an error message if file failed to open
         throw std::runtime_error("Writing header line to " + filePath + " failed!");
     }
@@ -217,7 +220,8 @@ void FileHandler::WritePlanState(std::string filePath, int step, int row, int co
 {
     std::ofstream fout {filePath, std::ios::out | std::ios::app};  // Open file in append mode
 
-    if (fout.is_open()) {
+    if (fout.is_open()) 
+    {
         fout << step << ','
              << row << ','
              << column << ','
@@ -226,8 +230,63 @@ void FileHandler::WritePlanState(std::string filePath, int step, int row, int co
              << (wallVisibility[1] ? 'Y' : 'N') << ','
              << (wallVisibility[2] ? 'Y' : 'N') << std::endl;
         fout.close();
-    } else {
+    } 
+    else 
+    {
         // Throw an error message if file failed to open
         throw std::runtime_error("Writing new line to " + filePath + " failed!");
     }
 }
+
+void FileHandler::WriteLine(std::string filePath, std::string line, bool shouldAppend)
+{
+    std::ios::openmode openMode = std::ios::out;
+
+    if (shouldAppend)
+    {
+        openMode |= std::ios::app;
+    }
+
+    std::ofstream fout {filePath, openMode};
+
+    if (fout.is_open()) 
+    {
+        fout << line;
+
+        fout.close();
+    } 
+    else 
+    {
+        // Throw an error message if file failed to open
+        throw std::runtime_error("Writing new line to " + filePath + " failed!");
+    }
+}
+
+void FileHandler::WriteLines(std::string filePath, std::vector<std::string> lines, bool shouldAppend)
+{
+    std::ios::openmode openMode = std::ios::out;
+
+    if (shouldAppend)
+    {
+        openMode |= std::ios::app;
+    }
+
+    std::ofstream fout {filePath, openMode};
+
+    if (fout.is_open()) 
+    {
+        for (std::string line : lines)
+        {
+            fout << line;
+        }
+
+        fout.close();
+    } 
+    else 
+    {
+        // Throw an error message if file failed to open
+        throw std::runtime_error("Writing new line to " + filePath + " failed!");
+    }
+}
+
+

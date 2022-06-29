@@ -16,7 +16,10 @@ int main(int argc, char **argv)
 {
     EPuck ePuck {};
 
+    ePuck.SetOutputFile(MAP_OUTPUT_FILE_NAME);
+    ePuck.SetPathPlanOutputFile(PATH_PLAN_OUTPUT_FILE_NAME);
     ePuck.ReadMap(MAP_INPUT_FILE_NAME);
+    ePuck.SolveMap();
 
     return 0;
 }
