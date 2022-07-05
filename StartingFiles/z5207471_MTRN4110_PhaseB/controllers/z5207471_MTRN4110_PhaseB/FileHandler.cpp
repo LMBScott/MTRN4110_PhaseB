@@ -1,6 +1,6 @@
 // File:                 FileHandler.hpp
-// Date:                 10/06/2022
-// Description:          Class implementation for the FileHandler class designed to handle file input/output for MTRN4110 Assignment Phase A
+// Date:                 24/06/2022
+// Description:          Class implementation for the FileHandler class designed to handle file input/output for MTRN4110 Assignment Phase B
 // Author:               Lachlan Scott (z5207471)
 // Development Platform: MacOS 12.4 Monterey, M1 Pro processor
 

@@ -1,3 +1,9 @@
+// File:                 EPuck.cpp
+// Date:                 24/06/2022
+// Description:          Class implementation for the MazeMap class used to solve mazes in MTRN4110 Assignment Phase B
+// Author:               Lachlan Scott (z5207471)
+// Development Platform: MacOS 12.4 Monterey, M1 Pro processor
+
 #include <MazeMap.hpp>
 
 MazeMap::MazeMap(std::vector<std::string> mapString)

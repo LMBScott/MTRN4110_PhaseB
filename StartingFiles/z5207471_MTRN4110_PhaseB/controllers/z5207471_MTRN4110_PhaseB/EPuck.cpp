@@ -1,5 +1,5 @@
 // File:                 EPuck.cpp
-// Date:                 10/06/2022
+// Date:                 24/06/2022
 // Description:          Class implementation for the EPuck robot class designed to control an e-puck robot in the WeBots simulator
 // Author:               Lachlan Scott (z5207471)
 // Development Platform: MacOS 12.4 Monterey, M1 Pro processor
