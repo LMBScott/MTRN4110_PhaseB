@@ -2,9 +2,11 @@
 """
 Created on Tue Jun 29 15:08:39 2022
 @author: Calvin Chua
-Usuage: 
+Modified at Wed Jul 6 4:36:22 2022
+Modified by: Lachlan Scott
+Usage: 
 python ./Automarker.py [zid]
-nstructions:
+Instructions:
 If you have installed python or have had experience with using python, skip step 1.
 1. Download and install Anaconda Python - https://www.anaconda.com/products/individual
 2. Save "Automarker.py" into the same directory you output your "Output.txt" and "PathPlan.txt"
@@ -36,10 +38,22 @@ the test cases provided.
 """
 
 
-
+import os
 import sys
-import math
-defaultPrefix ="[z5207471_MTRN4110_PhaseB]"
+import re
+import subprocess
+import shutil
+
+defaultPrefix ="[z1234567_MTRN4110_PhaseB]"
+webotsAppLocation = "\"C:\\Program Files\\Webots\\msys64\\mingw64\\bin\webots.exe\""
+exeFileName = "z1234567_MTRN4110_PhaseB.exe"
+worldFileName = "z1234567_MTRN4110_PhaseB.wbt"
+outputFileName = "Output.txt"
+mapFileRegex = "Map(\d)+.txt"
+inputMapFileName = "Map.txt"
+GREEN_TEXT = '\033[92m'
+RED_TEXT = '\033[91m'
+END_TEXT_FMT = '\033[0m'
 
 
 def compare_maps(soln_map, stu_map):
@@ -80,8 +94,8 @@ def taskA(solution, student,prefix):
     mark =0
     correctLines =0
     if(len(stuMap)!=len(solMap)):
-        print("Student might not follow the syntax or has extra lines in maze")
-        print("Please validate and rerun the code")
+        print("\t\tStudent might not follow the syntax or has extra lines in maze")
+        print("\t\tPlease validate and rerun the code")
         return 0
     
     for i, row in enumerate(solMap):
@@ -90,7 +104,7 @@ def taskA(solution, student,prefix):
         if("--- --- --- --- --- --- --- --- ---" in row):
             continue
         if(row != stuMap[i]):
-            print(f'Line {i}:\n\tExpected:\n\t{row}\n\tGot:\n\t{stuMap[i]}\n')
+            print(f'\t\tLine {i}:\n\tExpected:\n\t{row}\n\tGot:\n\t{stuMap[i]}\n')
         else:
             correctLines +=1
             
@@ -161,35 +175,33 @@ def taskB(solution, student,prefix):
     numPathSol = len(solMazeList)
     numPathStu = 0
 
-    for solIndex, solMaze in enumerate(solMazeList):
+    for _, solMaze in enumerate(solMazeList):
         matchFound =False
-        for stuIndex, stuMaze in enumerate(stuMazeList):
+        for _, stuMaze in enumerate(stuMazeList):
             if compare_maps(solMaze, stuMaze):
                 stuMazeList.remove(stuMaze)
                 matchFound =True
                 break
         if(matchFound ==True):
             numPathStu +=1
-        else:
-            print(f'Path {solIndex+1} in solution is not found')
     wrongPathNum =len(stuMazeList)
     if(wrongPathNum !=0):
-        print(f'{len(stuMazeList)} path/s in the student answer is/are not part of the solution')
+        print(f"\t\t{len(stuMazeList)} path/s in the student answer is/are not part of the solution")
         
     if(numPathStu ==numPathSol):
         mark =50
     else:
         if(numPathStu>numPathSol):
-            print("Something goes wrong")
+            print("\t\tSomething goes wrong")
         mark =numPathStu/numPathSol *50
     mark -= (wrongPathNum +dupNum)/numPathSol *50
     if(mark<10):
         if(numPathStu>0):
             mark =10
         else:
-            print("If you have at least found a valid path, self award yourself 5%")
+            print("\t\tIf you have at least found a valid path, self award yourself 5%")
     if(dupNum>0):
-        print(f"There is {dupNum} of duplicate maze")
+        print(f"\t\tThere is {dupNum} of duplicate maze")
     
     return round(mark,2)
 
@@ -199,12 +211,78 @@ if __name__ == "__main__":
         zid =sys.argv[1]
         prefix ="["+zid+"_MTRN4110_PhaseB]"
     else:
-        prefix = defaultPrefix
+        print("Please enter your zID as the first (and only) argument.", flush = True)
+        exit()
     # This is where the actual marking happens
-    with open("Solution.txt", "r") as solution:
-        with open("Output.txt", "r") as student:
-            scoreTaskA =taskA(solution, student, prefix)
-            print(f"Student achieved {scoreTaskA}/10 for task A")
-            scoreTaskB =taskB(solution, student, prefix)
-            print(f"Student achieved {scoreTaskB}/50 for task B")
+    mapFiles = []
+    exeFileFound = False
+    for file in os.listdir(os.fsencode(".")):
+        fileName = os.fsdecode(file)
+        if re.match(mapFileRegex, fileName):
+            mapFiles.append(fileName)
+        if fileName == exeFileName:
+            exeFileFound = True
 
+    if not exeFileFound:
+        print(f"Could not find {exeFileName} in this directory. Please add it.", flush = True)
+        exit()
+    
+    numMapFiles = len(mapFiles)
+    if numMapFiles > 0:
+        print(f"Found {len(mapFiles)} map files. Proceeding with automarking...", flush = True)
+    else:
+        print("Could not find any map files in this directory. Make sure they're named \"Map{0,1,2,3...}.txt\".", flush = True)
+        exit()
+
+    numPassedTests = 0
+    numFailedTests = 0
+
+    for mapFile in mapFiles:
+        print(f"Beginning automarking for {mapFile}...", flush = True)
+
+        scoreTaskA = 0
+        scoreTaskB = 0
+
+        with open(mapFile) as map:
+            shutil.copyfile(mapFile, inputMapFileName)
+
+        webots = subprocess.Popen(f"{webotsAppLocation} --mode=fast --no-rendering --stdout --stderr ./worlds/{worldFileName}", 
+                                  stdout = subprocess.PIPE, 
+                                  stderr = subprocess.STDOUT,
+                                  encoding='utf8')
+        
+        hasControllerFinished = False
+        while not hasControllerFinished:
+            if webots.stdout != None:
+                line = webots.stdout.readline()
+                if re.match("INFO: '(.)+' controller exited successfully.", line):
+                    hasControllerFinished = True
+                
+                if re.match("WARNING: '(.)+' controller exited with status: (\d)+.", line):
+                    print(f"\t{RED_TEXT}WARNING: Controller crashed!{END_TEXT_FMT}", flush = True)
+                    hasControllerFinished = True
+
+        webots.kill()
+
+        subprocess.run([exeFileName])
+
+        with open("Solution.txt", "r") as solution:
+            with open("Output.txt", "r") as student:
+                print(f"\tAutomarking task A...", flush = True)
+                scoreTaskA = taskA(solution, student, prefix)
+                print(f"\tStudent achieved {scoreTaskA}/10 for task A", flush = True)
+                print(f"\tAutomarking task B...", flush = True)
+                scoreTaskB = taskB(solution, student, prefix)
+                print(f"\tStudent achieved {scoreTaskB}/50 for task B", flush = True)
+        
+        if scoreTaskA == 10 and scoreTaskB == 50:
+            numPassedTests += 1
+            print(f"\t{GREEN_TEXT}Passed!{END_TEXT_FMT}", flush = True)
+        else:
+            numFailedTests += 1
+            print(f"\t{RED_TEXT}Failed!{END_TEXT_FMT}", flush = True)
+    
+    if numPassedTests == numMapFiles:
+        print(f"Finished automarking: {GREEN_TEXT}All {numPassedTests} tests passed!{END_TEXT_FMT}")
+    else:
+        print(f"Finished automarking: {numPassedTests}/{numMapFiles} {GREEN_TEXT}tests passed{END_TEXT_FMT}, {numFailedTests}/{numMapFiles} {RED_TEXT}tests failed{END_TEXT_FMT}")
