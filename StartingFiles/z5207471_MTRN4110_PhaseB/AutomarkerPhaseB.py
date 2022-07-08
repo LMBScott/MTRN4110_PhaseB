@@ -49,6 +49,7 @@ webotsAppLocation = "\"C:\\Program Files\\Webots\\msys64\\mingw64\\bin\webots.ex
 exeFileName = "z1234567_MTRN4110_PhaseB.exe"
 worldFileName = "z1234567_MTRN4110_PhaseB.wbt"
 outputFileName = "Output.txt"
+mapFilePath = "./Maps"
 mapFileRegex = "Map(\d)+.txt"
 inputMapFileName = "Map.txt"
 GREEN_TEXT = '\033[92m'
@@ -218,10 +219,13 @@ if __name__ == "__main__":
     exeFileFound = False
     for file in os.listdir(os.fsencode(".")):
         fileName = os.fsdecode(file)
-        if re.match(mapFileRegex, fileName):
-            mapFiles.append(fileName)
         if fileName == exeFileName:
             exeFileFound = True
+    
+    for file in os.listdir(os.fsencode(mapFilePath)):
+        fileName = os.fsdecode(file)
+        if re.match(mapFileRegex, fileName):
+            mapFiles.append(fileName)
 
     if not exeFileFound:
         print(f"Could not find {exeFileName} in this directory. Please add it.", flush = True)
@@ -243,8 +247,7 @@ if __name__ == "__main__":
         scoreTaskA = 0
         scoreTaskB = 0
 
-        with open(mapFile) as map:
-            shutil.copyfile(mapFile, inputMapFileName)
+        shutil.copyfile(f"{mapFilePath}/{mapFile}", inputMapFileName)
 
         webots = subprocess.Popen(f"{webotsAppLocation} --mode=fast --no-rendering --stdout --stderr ./worlds/{worldFileName}", 
                                   stdout = subprocess.PIPE, 
