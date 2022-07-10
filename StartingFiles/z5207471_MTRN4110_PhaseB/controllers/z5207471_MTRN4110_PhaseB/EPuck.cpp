@@ -125,7 +125,7 @@ void EPuck::Run()
             PrintPlanState();
             fileHandler.WritePlanState(motionExecutionFilePath, planStep, row, column, heading, wallVisibility);
 
-            if (planStep < plan->steps.size())
+            if (planStep < static_cast<int>(plan->steps.size()))
             {
                 // At least one step remaining, prepare to execute next step
                 switch (plan->steps[planStep])

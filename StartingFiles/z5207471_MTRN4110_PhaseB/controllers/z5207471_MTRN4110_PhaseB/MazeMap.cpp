@@ -228,9 +228,9 @@ void MazeMap::PathFind()
     int minStepCount = std::numeric_limits<int>::max();
     int optimalPathIndex = 0;
 
-    for (int i = 0; i < shortestPaths.size(); i++)
+    for (int i = 0; i < static_cast<int>(shortestPaths.size()); i++)
     {
-        if (shortestPaths[i].planString.length() < minStepCount)
+        if (static_cast<int>(shortestPaths[i].planString.length()) < minStepCount)
         {
             minStepCount = shortestPaths[i].planString.length();
             optimalPathIndex = i;
@@ -511,7 +511,7 @@ std::vector<std::string> MazeMap::GetPathMap(MazeMap::MazePath path)
             int cellWeight = -1;
 
             // Print cell's weight (distance to goal) if it is part of the path
-            for (int k = 0; k < path.stepCoordinates.size(); k++)
+            for (int k = 0; k < static_cast<int>(path.stepCoordinates.size()); k++)
             {
                 if (path.stepCoordinates[k].row == i && path.stepCoordinates[k].column == j)
                 {
@@ -594,7 +594,7 @@ std::vector<std::string> MazeMap::GetShortestPathOutput()
 {
     std::vector<std::string> output;
 
-    for (int i = 0; i < shortestPaths.size(); i++)
+    for (int i = 0; i < static_cast<int>(shortestPaths.size()); i++)
     {
         output.push_back("Path - " + std::to_string(i + 1) + ":\n");
         std::vector<std::string> pathMap = GetPathMap(shortestPaths[i]);
